@@ -1,0 +1,509 @@
+.birthday-landing {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  isolation: isolate;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  color: #fff4dd;
+  background:
+    radial-gradient(ellipse at 50% 46%, rgba(52, 39, 37, 0.5), transparent 58%),
+    radial-gradient(ellipse at 50% 110%, rgba(65, 36, 34, 0.42), transparent 62%),
+    linear-gradient(180deg, #080a12 0%, #0b0c14 56%, #080a12 100%);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.birthday-landing *,
+.birthday-landing *::before,
+.birthday-landing *::after {
+  box-sizing: border-box;
+}
+
+.birthday-fireworks-canvas,
+.birthday-vignette {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.birthday-fireworks-canvas {
+  z-index: 0;
+}
+
+.birthday-vignette {
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at center, transparent 38%, rgba(5, 6, 11, 0.16) 100%),
+    linear-gradient(180deg, rgba(5, 6, 10, 0.08), transparent 25%, transparent 76%, rgba(5, 6, 10, 0.3));
+}
+
+.birthday-landing-top {
+  position: absolute;
+  z-index: 3;
+  inset: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 58px;
+  padding: 10px clamp(14px, 3vw, 36px);
+  pointer-events: none;
+}
+
+.birthday-monogram {
+  display: grid;
+  flex: 0 0 auto;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  border: 1px solid rgba(232, 199, 141, 0.54);
+  border-radius: 50%;
+  color: #e8c78d;
+  font: 500 16px 'Cormorant Garamond', Georgia, serif;
+}
+
+.birthday-audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  pointer-events: auto;
+}
+
+.birthday-motion-opt-in {
+  display: inline-flex;
+  min-height: 31px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 7px;
+  border: 1px solid rgba(232, 199, 141, 0.42);
+  border-radius: 2px;
+  color: rgba(255, 244, 221, 0.78);
+  background: rgba(8, 10, 18, 0.68);
+  cursor: pointer;
+  font: 500 7px 'DM Sans', sans-serif;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.birthday-motion-opt-in:hover,
+.birthday-motion-opt-in:focus-visible {
+  border-color: rgba(232, 199, 141, 0.82);
+  color: #fff4dd;
+}
+
+.birthday-audio-button,
+.birthday-audio-icon-button {
+  display: inline-flex;
+  min-height: 31px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 9px;
+  border: 1px solid rgba(232, 199, 141, 0.26);
+  border-radius: 2px;
+  color: rgba(255, 244, 221, 0.78);
+  background: rgba(8, 10, 18, 0.55);
+  cursor: pointer;
+  font: 500 8px 'DM Sans', sans-serif;
+  letter-spacing: 0.12em;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.birthday-audio-button:hover,
+.birthday-audio-icon-button:hover,
+.birthday-audio-button:focus-visible,
+.birthday-audio-icon-button:focus-visible,
+.birthday-audio-button.is-playing,
+.birthday-audio-icon-button.is-playing {
+  border-color: rgba(232, 199, 141, 0.75);
+  color: #fff4dd;
+  background: rgba(37, 29, 28, 0.76);
+}
+
+.birthday-audio-icon-button {
+  min-width: 34px;
+  padding: 0 7px;
+}
+
+.birthday-sfx-toggle {
+  min-width: 55px;
+}
+
+.music-indicator {
+  display: inline-flex;
+  height: 12px;
+  align-items: center;
+  gap: 2px;
+}
+
+.music-indicator i {
+  display: block;
+  width: 2px;
+  height: 4px;
+  border-radius: 2px;
+  background: #d9a08e;
+}
+
+.music-indicator.is-playing i {
+  animation: music-wave 0.72s ease-in-out infinite alternate;
+}
+
+.music-indicator.is-playing i:nth-child(2) {
+  animation-delay: -0.38s;
+}
+
+.music-indicator.is-playing i:nth-child(3) {
+  animation-delay: -0.16s;
+}
+
+@keyframes music-wave {
+  to { height: 12px; }
+}
+
+.birthday-volume-control {
+  display: flex;
+  width: 68px;
+  align-items: center;
+}
+
+.birthday-volume-control input {
+  width: 100%;
+  height: 16px;
+  accent-color: #e8c78d;
+  cursor: pointer;
+}
+
+.birthday-landing button:focus-visible,
+.birthday-volume-control input:focus-visible {
+  outline: 2px solid rgba(232, 199, 141, 0.82);
+  outline-offset: 3px;
+}
+
+.birthday-content {
+  position: absolute;
+  z-index: 2;
+  top: 48%;
+  left: 50%;
+  display: flex;
+  width: min(940px, calc(100vw - 36px));
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 2.8vh, 27px);
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.birthday-title-block {
+  width: 100%;
+}
+
+.birthday-title-line,
+.birthday-word,
+.birthday-signoff,
+.birthday-enter-button {
+  visibility: hidden;
+}
+
+.birthday-title {
+  margin: 0;
+  color: #e8c78d;
+  font: 500 clamp(40px, 7.2vw, 94px)/0.98 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: 0.055em;
+  text-shadow: 0 0 28px rgba(232, 199, 141, 0.25), 0 0 88px rgba(217, 160, 142, 0.18);
+}
+
+.birthday-title-line {
+  display: block;
+  width: fit-content;
+  margin: 0 auto;
+  background: linear-gradient(112deg, #fff4dd 0%, #e8c78d 24%, #fff8e9 49%, #d9a08e 69%, #f5dfb1 87%, #fff4dd 100%);
+  background-size: 220% 100%;
+  background-position: 0 50%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+  animation: birthday-metallic-shimmer 5.2s ease-in-out infinite alternate;
+}
+
+.birthday-name {
+  margin-top: 5px;
+  font-size: clamp(76px, 15vw, 182px);
+  letter-spacing: 0.105em;
+  line-height: 0.9;
+}
+
+.birthday-title-mark {
+  color: #d9a08e;
+  -webkit-text-fill-color: #d9a08e;
+}
+
+@keyframes birthday-metallic-shimmer {
+  to { background-position: 100% 50%; }
+}
+
+.birthday-message {
+  width: min(100%, 700px);
+  visibility: hidden;
+}
+
+.birthday-message-copy {
+  margin: 0 auto;
+  color: rgba(255, 244, 221, 0.95);
+  font: 400 clamp(17px, 2vw, 23px)/1.52 'Cormorant Garamond', Georgia, serif;
+  text-wrap: pretty;
+  text-shadow: 0 1px 14px rgba(8, 10, 18, 0.9);
+}
+
+.birthday-final-wish {
+  margin: 13px 0 0;
+  color: #e8c78d;
+  font: 600 clamp(10px, 1.05vw, 13px)/1.5 'DM Sans', sans-serif;
+  letter-spacing: 0.24em;
+  text-shadow: 0 0 22px rgba(232, 199, 141, 0.36);
+}
+
+.birthday-signoff {
+  margin: 8px 0 0;
+  color: #e2b4a1;
+  font: italic 500 clamp(16px, 1.7vw, 21px) 'Cormorant Garamond', Georgia, serif;
+}
+
+.birthday-enter-wrap {
+  position: absolute;
+  z-index: 3;
+  bottom: clamp(25px, 6vh, 58px);
+  left: 50%;
+  width: max-content;
+  max-width: calc(100vw - 36px);
+  transform: translateX(-50%);
+}
+
+.birthday-enter-button {
+  display: inline-flex;
+  min-width: 224px;
+  min-height: 51px;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 0 23px;
+  border: 1px solid rgba(232, 199, 141, 0.78);
+  border-radius: 2px;
+  color: #fff0cf;
+  background: rgba(8, 10, 18, 0.58);
+  cursor: pointer;
+  font: 500 9px 'DM Sans', sans-serif;
+  letter-spacing: 0.22em;
+  transition: border-color 0.24s ease, color 0.24s ease;
+  backdrop-filter: blur(7px);
+}
+
+.birthday-enter-button:hover,
+.birthday-enter-button:focus-visible {
+  border-color: #fff0cf;
+  color: #fff8e9;
+  outline: none;
+}
+
+.enter-arrow {
+  color: #d9a08e;
+  font-size: 17px;
+  transition: transform 0.24s ease;
+}
+
+.birthday-enter-button:hover .enter-arrow,
+.birthday-enter-button:focus-visible .enter-arrow {
+  transform: translateX(4px);
+}
+
+.birthday-music-error {
+  position: absolute;
+  z-index: 4;
+  top: 55px;
+  right: 16px;
+  max-width: min(270px, 75vw);
+  margin: 0;
+  color: #e2b4a1;
+  font-size: 11px;
+  text-align: right;
+  text-shadow: 0 1px 5px #080a12;
+}
+
+.birthday-landing .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+@media (max-width: 600px) {
+  .birthday-landing-top {
+    min-height: 50px;
+    padding: 8px 12px;
+  }
+
+  .birthday-monogram {
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+  }
+
+  .birthday-audio-controls {
+    gap: 4px;
+  }
+
+  .birthday-audio-button,
+  .birthday-audio-icon-button {
+    min-height: 29px;
+    gap: 5px;
+    padding: 0 6px;
+    font-size: 7px;
+    letter-spacing: 0.08em;
+  }
+
+  .birthday-audio-icon-button {
+    min-width: 30px;
+  }
+
+  .birthday-sfx-toggle {
+    min-width: 47px;
+  }
+
+  .birthday-volume-control {
+    width: 42px;
+  }
+
+  .birthday-motion-opt-in {
+    min-height: 29px;
+    padding: 0 5px;
+    font-size: 6px;
+  }
+
+  .birthday-content {
+    top: 48%;
+    width: calc(100vw - 30px);
+    gap: clamp(15px, 2.7vh, 23px);
+  }
+
+  .birthday-title {
+    font-size: clamp(34px, 9.3vw, 54px);
+    letter-spacing: 0.025em;
+  }
+
+  .birthday-name {
+    margin-top: 8px;
+    font-size: clamp(72px, 19.5vw, 110px);
+    letter-spacing: 0.065em;
+  }
+
+  .birthday-message {
+    width: min(100%, 500px);
+  }
+
+  .birthday-message-copy {
+    font-size: clamp(16px, 4.5vw, 19px);
+    line-height: 1.48;
+  }
+
+  .birthday-final-wish {
+    margin-top: 11px;
+    font-size: 10px;
+    letter-spacing: 0.17em;
+  }
+
+  .birthday-signoff {
+    margin-top: 7px;
+    font-size: 17px;
+  }
+
+  .birthday-enter-wrap {
+    bottom: max(20px, env(safe-area-inset-bottom));
+  }
+
+  .birthday-enter-button {
+    min-width: 210px;
+    min-height: 48px;
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .birthday-monogram {
+    width: 22px;
+    height: 22px;
+  }
+
+  .birthday-audio-controls {
+    gap: 3px;
+  }
+
+  .birthday-audio-button,
+  .birthday-audio-icon-button {
+    min-height: 27px;
+    padding: 0 5px;
+  }
+
+  .birthday-volume-control {
+    width: 34px;
+  }
+
+  .birthday-sfx-toggle {
+    min-width: 43px;
+  }
+
+  .birthday-title {
+    font-size: 33px;
+  }
+
+  .birthday-name {
+    font-size: 69px;
+  }
+}
+
+@media (max-height: 680px) {
+  .birthday-content {
+    top: 47%;
+    gap: 10px;
+  }
+
+  .birthday-title {
+    font-size: clamp(36px, 7vw, 66px);
+  }
+
+  .birthday-name {
+    font-size: clamp(66px, 12vw, 115px);
+  }
+
+  .birthday-message-copy {
+    font-size: clamp(15px, 1.7vw, 19px);
+    line-height: 1.4;
+  }
+
+  .birthday-final-wish {
+    margin-top: 7px;
+  }
+
+  .birthday-signoff {
+    margin-top: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .birthday-title-line,
+  .music-indicator.is-playing i {
+    animation: none;
+  }
+
+  .birthday-audio-button,
+  .birthday-audio-icon-button,
+  .birthday-enter-button,
+  .enter-arrow {
+    transition: none;
+  }
+}
