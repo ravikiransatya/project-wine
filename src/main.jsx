@@ -56,6 +56,8 @@ function StardustField({ burst = 0 }) {
 
 function App() {
   const [showLanding, setShowLanding] = useState(true);
+  const [landingStarted, setLandingStarted] = useState(false);
+  const [showApp, setShowApp] = useState(false);
   const [scene, setScene] = useState('welcome');
   const [sfxOn, setSfxOn] = useState(true);
   const [envelopeOpen, setEnvelopeOpen] = useState(false);
@@ -83,16 +85,36 @@ function App() {
 
   useEffect(() => {
     window.history.replaceState(
-      { ...window.history.state, vinniScene: 'welcome' },
+      { ...window.history.state, vinniIntro: 'music-gate', vinniScene: 'welcome' },
       '',
       window.location.href
     );
 
     const handlePopState = (event) => {
+      if (event.state?.vinniIntro === 'music-gate') {
+        setShowLanding(true);
+        setLandingStarted(false);
+        setShowApp(false);
+        setScene('welcome');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      if (event.state?.vinniIntro === 'birthday-landing') {
+        setShowLanding(true);
+        setLandingStarted(true);
+        setShowApp(false);
+        setScene('welcome');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
       const previousScene = event.state?.vinniScene === 'gallery'
         ? 'letter'
         : event.state?.vinniScene;
       if (scenes.includes(previousScene)) {
+        setShowLanding(false);
+        setShowApp(true);
         setScene(previousScene);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
@@ -165,13 +187,35 @@ function App() {
     if (scene === 'letter') stopLetterMusic();
     magicAudio.playChime('sparkle');
     window.history.pushState(
-      { ...window.history.state, vinniScene: next },
+      { ...window.history.state, vinniIntro: 'app', vinniScene: next },
       '',
       window.location.href
     );
     setScene(next);
     setBurstKey(v => v + 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const startBirthdayMusic = () => {
+    window.history.pushState(
+      { ...window.history.state, vinniIntro: 'birthday-landing', vinniScene: 'welcome' },
+      '',
+      window.location.href
+    );
+    setLandingStarted(true);
+  };
+
+  const enterBirthdayApp = () => {
+    window.history.pushState(
+      { ...window.history.state, vinniIntro: 'app', vinniScene: 'welcome' },
+      '',
+      window.location.href
+    );
+    setShowApp(true);
+  };
+
+  const finishBirthdayLanding = () => {
+    setShowLanding(false);
   };
 
   const toggleFriendshipLetter = () => {
@@ -301,12 +345,18 @@ function App() {
     setRevealedSecrets(prev => ({ ...prev, [idx]: !prev[idx] }));
   };
 
-  if (showLanding) {
-    return <BirthdayLanding onEnter={() => setShowLanding(false)} />;
-  }
-
   return (
-    <main className={`site-shell scene-is-${scene}`}>
+    <>
+      {showLanding && (
+        <BirthdayLanding
+          initialHasStarted={landingStarted}
+          onStartMusic={startBirthdayMusic}
+          onEnter={enterBirthdayApp}
+          onExitComplete={finishBirthdayLanding}
+        />
+      )}
+      {showApp && (
+        <main className={`site-shell scene-is-${scene}`}>
       <audio ref={letterMusicRef} src="/golden-brown.mp3" preload="none" />
       <div className="grain" />
       <StardustField burst={burstKey} />
@@ -834,7 +884,9 @@ function App() {
         <span>✦</span>
         <span>BUILT EXCLUSIVELY FOR VINNI · 2026</span>
       </footer>
-    </main>
+        </main>
+      )}
+    </>
   );
 }
 

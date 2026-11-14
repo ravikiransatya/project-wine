@@ -6,6 +6,12 @@ import './birthday-landing.css';
 
 const MESSAGE = 'From one unexpected hello to a thousand beautiful memories, you became a part of so many of my happiest days. May life give you all the happiness you bring into mine.';
 
+function setPitchPreservation(audio, preserve) {
+  if ('preservesPitch' in audio) audio.preservesPitch = preserve;
+  else if ('webkitPreservesPitch' in audio) audio.webkitPreservesPitch = preserve;
+  else if ('mozPreservesPitch' in audio) audio.mozPreservesPitch = preserve;
+}
+
 function WordReveal({ text, className = '' }) {
   const words = text.split(' ');
   return (
@@ -90,7 +96,7 @@ function PersonalBirthdayMessage() {
   );
 }
 
-export function BirthdayLanding({ onEnter }) {
+export function BirthdayLanding({ initialHasStarted = false, onStartMusic, onEnter, onExitComplete }) {
   const rootRef = useRef(null);
   const fireworksRef = useRef(null);
   const buttonRef = useRef(null);
@@ -99,6 +105,7 @@ export function BirthdayLanding({ onEnter }) {
   const audioRef = useRef(null);
   const soundEffectsRef = useRef(false);
   const enteredRef = useRef(false);
+  const [hasStarted, setHasStarted] = useState(initialHasStarted);
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [musicError, setMusicError] = useState('');
   const [musicMuted, setMusicMuted] = useState(false);
@@ -111,7 +118,7 @@ export function BirthdayLanding({ onEnter }) {
   const reportMusicPlaybackError = (error) => {
     const autoplayBlocked = error?.name === 'NotAllowedError';
     setMusicError(autoplayBlocked
-      ? 'Autoplay was blocked. Tap MUSIC to start the song.'
+      ? 'Tap MUSIC to start the song.'
       : 'The birthday song could not be played.');
     if (!autoplayBlocked) console.error('Could not play the birthday song.', error);
   };
@@ -123,6 +130,15 @@ export function BirthdayLanding({ onEnter }) {
   }, []);
 
   useEffect(() => {
+    setHasStarted(initialHasStarted);
+    if (!initialHasStarted) {
+      audioRef.current?.pause();
+      setMusicPlaying(false);
+    }
+  }, [initialHasStarted]);
+
+  useEffect(() => {
+    if (!hasStarted) return undefined;
     const root = rootRef.current;
     if (!root) return undefined;
     const context = gsap.context(() => {
@@ -220,7 +236,7 @@ export function BirthdayLanding({ onEnter }) {
       exitTimelineRef.current?.kill();
       context.revert();
     };
-  }, [reducedMotion]);
+  }, [hasStarted, reducedMotion]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -229,6 +245,23 @@ export function BirthdayLanding({ onEnter }) {
       audio.muted = musicMuted;
     }
   }, [musicVolume, musicMuted]);
+
+  const startExperience = () => {
+    if (hasStarted) return;
+
+    if (audioRef.current) {
+      const audio = audioRef.current;
+      audio.volume = musicVolume;
+      audio.muted = musicMuted;
+      audio.play().then(() => {
+        setMusicError('');
+        setMusicPlaying(true);
+      }).catch(reportMusicPlaybackError);
+    }
+
+    onStartMusic();
+    setHasStarted(true);
+  };
 
   const toggleMusic = () => {
     const audio = audioRef.current;
@@ -268,18 +301,65 @@ export function BirthdayLanding({ onEnter }) {
   const enterWorld = () => {
     if (enteredRef.current) return;
     enteredRef.current = true;
-    audioRef.current?.pause();
-    setMusicPlaying(false);
+    const audio = audioRef.current;
+    const fadeMusic = audio && !audio.paused;
+    if (fadeMusic) setPitchPreservation(audio, false);
+
     const root = rootRef.current;
+    const finishExit = () => {
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.playbackRate = 1;
+        audio.volume = musicVolume;
+        setPitchPreservation(audio, true);
+      }
+      setMusicPlaying(false);
+      onExitComplete();
+    };
+
     if (reducedMotion || !root) {
       onEnter();
+      if (!fadeMusic) {
+        setMusicPlaying(false);
+        onExitComplete();
+        return;
+      }
+
+      if (root) gsap.set(root, { autoAlpha: 0 });
+      exitTimelineRef.current = gsap.timeline({ onComplete: finishExit })
+        .to(audio, {
+          volume: 0,
+          playbackRate: 0.6,
+          duration: 0.65,
+          ease: 'power2.out'
+        });
       return;
     }
+
     fireworksRef.current?.finalBurst();
     if (soundEffectsRef.current) magicAudio.playFireworks();
-    exitTimelineRef.current = gsap.timeline({ onComplete: onEnter })
-      .to({}, { duration: 0.55 })
-      .to(root, { autoAlpha: 0, scale: 1.015, duration: 0.85, ease: 'power2.inOut' });
+    onEnter();
+
+    const exitTimeline = gsap.timeline({ onComplete: finishExit });
+
+    if (fadeMusic) {
+      exitTimeline.to(audio, {
+        volume: 0,
+        playbackRate: 0.6,
+        duration: 1.4,
+        ease: 'power2.out'
+      }, 0);
+    }
+
+    exitTimeline.to(root, {
+      autoAlpha: 0,
+      scale: 1.015,
+      duration: 0.75,
+      ease: 'power2.inOut'
+    }, 0);
+
+    exitTimelineRef.current = exitTimeline;
   };
 
   const animateButton = (scale, glow) => {
@@ -296,6 +376,30 @@ export function BirthdayLanding({ onEnter }) {
     <main className="birthday-landing" ref={rootRef}>
       <FireworksCanvas ref={fireworksRef} reducedMotion={reducedMotion} />
       <div className="birthday-vignette" aria-hidden="true" />
+
+      {!hasStarted && (
+        <section className="birthday-music-gate" aria-labelledby="birthday-music-gate-title">
+          <div className="birthday-music-gate-orbit birthday-music-gate-orbit-one" aria-hidden="true" />
+          <div className="birthday-music-gate-orbit birthday-music-gate-orbit-two" aria-hidden="true" />
+          <div className="birthday-music-gate-card">
+            <span className="birthday-music-gate-eyebrow">A LITTLE MUSIC BEFORE THE MAGIC</span>
+            <h1 id="birthday-music-gate-title">
+              Turn on the music.<br />
+              <em>Let the magic begin.</em>
+            </h1>
+            <p>Tap once to start the song and reveal your birthday surprise.</p>
+            <button
+              type="button"
+              className="birthday-music-start"
+              onClick={() => startExperience(true)}
+            >
+              <span className="birthday-music-start-icon" aria-hidden="true">♫</span>
+              <span>TURN ON MUSIC</span>
+              <span className="birthday-music-start-spark" aria-hidden="true">✦</span>
+            </button>
+          </div>
+        </section>
+      )}
 
       <header className="birthday-landing-top">
         <span className="birthday-monogram" aria-label="Vinni">V</span>

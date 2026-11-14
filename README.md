@@ -40,4 +40,4 @@ The final gift includes a message form. To receive messages:
 
 The endpoint is a public form identifier, not an email password or API secret. The message rocket animation only starts after Formspree accepts the submission; failures leave the written message in the form so it can be retried.
 
-Music starts only after the visitor presses Play music, respecting browser autoplay rules.
+The opening screen invites visitors to turn on music before the birthday animation begins. Audio starts only after a click, respecting browser autoplay rules.

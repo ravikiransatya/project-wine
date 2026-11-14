@@ -41,6 +41,121 @@
     linear-gradient(180deg, rgba(5, 6, 10, 0.08), transparent 25%, transparent 76%, rgba(5, 6, 10, 0.3));
 }
 
+.birthday-music-gate {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  display: grid;
+  overflow: hidden;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(ellipse at 50% 46%, rgba(67, 45, 43, 0.72), transparent 56%),
+    linear-gradient(180deg, rgba(8, 10, 18, 0.93), rgba(8, 10, 18, 0.97));
+}
+
+.birthday-music-gate-orbit {
+  position: absolute;
+  width: min(78vw, 660px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(232, 199, 141, 0.19);
+  border-radius: 50%;
+  box-shadow: 0 0 70px rgba(232, 199, 141, 0.04), inset 0 0 70px rgba(217, 160, 142, 0.035);
+  pointer-events: none;
+  animation: birthday-gate-orbit 5s ease-out infinite;
+}
+
+.birthday-music-gate-orbit-two {
+  animation-delay: 2.5s;
+}
+
+.birthday-music-gate-card {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: min(540px, 100%);
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: birthday-gate-arrive 0.9s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.birthday-music-gate-eyebrow {
+  color: #d9a08e;
+  font: 500 9px 'DM Sans', sans-serif;
+  letter-spacing: 0.24em;
+}
+
+.birthday-music-gate-card h1 {
+  margin: 24px 0 0;
+  color: #fff4dd;
+  font: 500 clamp(38px, 6.4vw, 68px)/1.04 'Cormorant Garamond', Georgia, serif;
+  text-shadow: 0 0 35px rgba(232, 199, 141, 0.16);
+}
+
+.birthday-music-gate-card h1 em {
+  color: #e8c78d;
+  font-weight: 400;
+}
+
+.birthday-music-gate-card p {
+  max-width: 380px;
+  margin: 18px 0 28px;
+  color: rgba(255, 244, 221, 0.76);
+  font: 400 16px/1.6 'Cormorant Garamond', Georgia, serif;
+}
+
+.birthday-music-start {
+  display: inline-flex;
+  min-width: 236px;
+  min-height: 58px;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 0 22px;
+  border: 1px solid rgba(255, 240, 207, 0.9);
+  border-radius: 3px;
+  color: #17121a;
+  background: linear-gradient(112deg, #f3ddb0, #e8c78d 52%, #d9a08e);
+  box-shadow: 0 0 28px rgba(232, 199, 141, 0.23);
+  cursor: pointer;
+  font: 600 10px 'DM Sans', sans-serif;
+  letter-spacing: 0.19em;
+  animation: birthday-music-pulse 2.4s ease-in-out infinite;
+}
+
+.birthday-music-start:hover,
+.birthday-music-start:focus-visible {
+  outline: 2px solid rgba(255, 244, 221, 0.9);
+  outline-offset: 4px;
+  box-shadow: 0 0 40px rgba(232, 199, 141, 0.42);
+}
+
+.birthday-music-start-icon {
+  font-size: 19px;
+  line-height: 1;
+}
+
+.birthday-music-start-spark {
+  color: #7d4d50;
+  font-size: 15px;
+}
+
+@keyframes birthday-gate-orbit {
+  0% { opacity: 0; transform: scale(0.76); }
+  35% { opacity: 0.8; }
+  100% { opacity: 0; transform: scale(1.16); }
+}
+
+@keyframes birthday-gate-arrive {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes birthday-music-pulse {
+  50% { box-shadow: 0 0 42px rgba(232, 199, 141, 0.4); }
+}
+
 .birthday-landing-top {
   position: absolute;
   z-index: 3;
@@ -343,6 +458,35 @@
 }
 
 @media (max-width: 600px) {
+  .birthday-music-gate {
+    padding: 22px;
+  }
+
+  .birthday-music-gate-orbit {
+    width: 120vw;
+  }
+
+  .birthday-music-gate-eyebrow {
+    font-size: 8px;
+    letter-spacing: 0.17em;
+  }
+
+  .birthday-music-gate-card h1 {
+    margin-top: 20px;
+    font-size: clamp(36px, 10vw, 52px);
+  }
+
+  .birthday-music-gate-card p {
+    max-width: 300px;
+    margin: 16px 0 24px;
+    font-size: 15px;
+  }
+
+  .birthday-music-start {
+    min-width: 220px;
+    min-height: 54px;
+  }
+
   .birthday-landing-top {
     min-height: 50px;
     padding: 8px 12px;
@@ -496,7 +640,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .birthday-title-line,
-  .music-indicator.is-playing i {
+  .music-indicator.is-playing i,
+  .birthday-music-gate-orbit,
+  .birthday-music-gate-card,
+  .birthday-music-start {
     animation: none;
   }
 
