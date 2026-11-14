@@ -230,24 +230,6 @@ export function BirthdayLanding({ onEnter }) {
     }
   }, [musicVolume, musicMuted]);
 
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return undefined;
-    let active = true;
-
-    audio.play().then(() => {
-      if (!active) return;
-      setMusicError('');
-      setMusicPlaying(true);
-    }).catch((error) => {
-      if (active) reportMusicPlaybackError(error);
-    });
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
   const toggleMusic = () => {
     const audio = audioRef.current;
     if (!audio) return;
