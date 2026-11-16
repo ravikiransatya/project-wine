@@ -5,6 +5,7 @@ import { magicAudio } from '../sounds';
 import './birthday-landing.css';
 
 const MESSAGE = 'From one unexpected hello to a thousand beautiful memories, you became a part of so many of my happiest days. May life give you all the happiness you bring into mine.';
+const ACCESS_CODE = 'Poduko';
 
 function setPitchPreservation(audio, preserve) {
   if ('preservesPitch' in audio) audio.preservesPitch = preserve;
@@ -96,7 +97,14 @@ function PersonalBirthdayMessage() {
   );
 }
 
-export function BirthdayLanding({ initialHasStarted = false, onStartMusic, onEnter, onExitComplete }) {
+export function BirthdayLanding({
+  initialIdentityVerified = false,
+  initialHasStarted = false,
+  onIdentityVerified,
+  onStartMusic,
+  onEnter,
+  onExitComplete
+}) {
   const rootRef = useRef(null);
   const fireworksRef = useRef(null);
   const buttonRef = useRef(null);
@@ -105,6 +113,9 @@ export function BirthdayLanding({ initialHasStarted = false, onStartMusic, onEnt
   const audioRef = useRef(null);
   const soundEffectsRef = useRef(false);
   const enteredRef = useRef(false);
+  const [identityVerified, setIdentityVerified] = useState(initialIdentityVerified);
+  const [passcode, setPasscode] = useState('');
+  const [identityError, setIdentityError] = useState('');
   const [hasStarted, setHasStarted] = useState(initialHasStarted);
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [musicError, setMusicError] = useState('');
@@ -128,6 +139,14 @@ export function BirthdayLanding({ initialHasStarted = false, onStartMusic, onEnt
     gsap.killTweensOf(buttonRef.current);
     magicAudio.enabled = false;
   }, []);
+
+  useEffect(() => {
+    setIdentityVerified(initialIdentityVerified);
+    if (!initialIdentityVerified) {
+      setPasscode('');
+      setIdentityError('');
+    }
+  }, [initialIdentityVerified]);
 
   useEffect(() => {
     setHasStarted(initialHasStarted);
@@ -263,6 +282,19 @@ export function BirthdayLanding({ initialHasStarted = false, onStartMusic, onEnt
     setHasStarted(true);
   };
 
+  const verifyIdentity = (event) => {
+    event.preventDefault();
+    if (passcode.trim().toLowerCase() !== ACCESS_CODE.toLowerCase()) {
+      setIdentityError('That passcode is not correct. Please try again.');
+      setPasscode('');
+      return;
+    }
+
+    setIdentityError('');
+    onIdentityVerified();
+    setIdentityVerified(true);
+  };
+
   const toggleMusic = () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -377,7 +409,57 @@ export function BirthdayLanding({ initialHasStarted = false, onStartMusic, onEnt
       <FireworksCanvas ref={fireworksRef} reducedMotion={reducedMotion} />
       <div className="birthday-vignette" aria-hidden="true" />
 
-      {!hasStarted && (
+      {!identityVerified && (
+        <section className="birthday-music-gate birthday-identity-gate" aria-labelledby="birthday-identity-title">
+          <div className="birthday-identity-stars" aria-hidden="true">
+            <span className="birthday-identity-star star-one">✦</span>
+            <span className="birthday-identity-star star-two">✦</span>
+            <span className="birthday-identity-star star-three">✧</span>
+            <span className="birthday-identity-star star-four">✧</span>
+          </div>
+          <div className="birthday-music-gate-card birthday-identity-card">
+            <div className="birthday-lock-emblem" aria-hidden="true">
+              <span className="birthday-lock-orbit" />
+              <span className="birthday-lock-spark birthday-lock-spark-top">✦</span>
+              <span className="birthday-lock-spark birthday-lock-spark-left">✧</span>
+              <span className="birthday-lock-spark birthday-lock-spark-right">✦</span>
+              <span className="birthday-lock-shackle" />
+              <span className="birthday-lock-body" />
+            </div>
+            <h1 id="birthday-identity-title">VERIFY YOUR IDENTITY</h1>
+            <div className="birthday-identity-divider" aria-hidden="true"><span>✦</span></div>
+            <p>Enter your passcode to continue.</p>
+            <form className="birthday-identity-form" onSubmit={verifyIdentity}>
+              <label className="visually-hidden" htmlFor="birthday-passcode">Passcode</label>
+              <input
+                id="birthday-passcode"
+                type="password"
+                value={passcode}
+                onChange={event => {
+                  setPasscode(event.target.value);
+                  if (identityError) setIdentityError('');
+                }}
+                autoComplete="off"
+                autoCapitalize="none"
+                spellCheck="false"
+                aria-invalid={Boolean(identityError)}
+                aria-describedby={identityError ? 'birthday-passcode-error' : undefined}
+                required
+              />
+              <button type="submit" className="birthday-music-start">
+                <span>CONTINUE</span>
+              </button>
+              {identityError && (
+                <p id="birthday-passcode-error" className="birthday-identity-error" role="alert">
+                  {identityError}
+                </p>
+              )}
+            </form>
+          </div>
+        </section>
+      )}
+
+      {identityVerified && !hasStarted && (
         <section className="birthday-music-gate" aria-labelledby="birthday-music-gate-title">
           <div className="birthday-music-gate-orbit birthday-music-gate-orbit-one" aria-hidden="true" />
           <div className="birthday-music-gate-orbit birthday-music-gate-orbit-two" aria-hidden="true" />
@@ -401,7 +483,7 @@ export function BirthdayLanding({ initialHasStarted = false, onStartMusic, onEnt
         </section>
       )}
 
-      <header className="birthday-landing-top">
+      <header className="birthday-landing-top" inert={!identityVerified} aria-hidden={!identityVerified}>
         <span className="birthday-monogram" aria-label="Vinni">V</span>
         <MusicPlayer
           audioRef={audioRef}
@@ -417,7 +499,7 @@ export function BirthdayLanding({ initialHasStarted = false, onStartMusic, onEnt
         />
       </header>
 
-      <div className="birthday-content" id="birthday">
+      <div className="birthday-content" id="birthday" inert={!identityVerified} aria-hidden={!identityVerified}>
         <div className="birthday-title-block">
           <h1 className="birthday-title" aria-label="Happy Birthday, Vinni!">
             <span className="birthday-title-line">HAPPY BIRTHDAY</span>
@@ -428,7 +510,7 @@ export function BirthdayLanding({ initialHasStarted = false, onStartMusic, onEnt
         <PersonalBirthdayMessage />
       </div>
 
-      <div className="birthday-enter-wrap">
+      <div className="birthday-enter-wrap" inert={!identityVerified} aria-hidden={!identityVerified}>
         <button
           ref={buttonRef}
           type="button"

@@ -3,6 +3,7 @@
 A cinematic, click-driven birthday experience for Vinni (16 November 2026), built with React + Vite.
 
 ## Features
+- Passcode-based identity gate before the music and birthday experience
 - Cinematic, GSAP-timed birthday landing with canvas fireworks and a progressive personal message
 - Optional user-controlled local instrumental music
 - Luxury cream, champagne and rose-gold visual direction
@@ -30,6 +31,8 @@ npm run preview
 ## Deploy
 Push this folder to GitHub, import the repository into Vercel, select Vite, use `npm run build` and `dist` as the output directory.
 
+The in-app identity gate is a casual front-end check, not real access security: its passcode is included in the public JavaScript. Use Vercel access protection if the site must be restricted to specific people.
+
 ## Message delivery setup
 The final gift includes a message form. To receive messages:
 
@@ -40,4 +43,4 @@ The final gift includes a message form. To receive messages:
 
 The endpoint is a public form identifier, not an email password or API secret. The message rocket animation only starts after Formspree accepts the submission; failures leave the written message in the form so it can be retried.
 
-The opening screen invites visitors to turn on music before the birthday animation begins. Audio starts only after a click, respecting browser autoplay rules.
+After identity verification, the opening screen invites visitors to turn on music before the birthday animation begins. Audio starts only after a click, respecting browser autoplay rules.

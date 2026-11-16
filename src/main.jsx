@@ -56,6 +56,7 @@ function StardustField({ burst = 0 }) {
 
 function App() {
   const [showLanding, setShowLanding] = useState(true);
+  const [identityVerified, setIdentityVerified] = useState(false);
   const [landingStarted, setLandingStarted] = useState(false);
   const [showApp, setShowApp] = useState(false);
   const [scene, setScene] = useState('welcome');
@@ -85,14 +86,25 @@ function App() {
 
   useEffect(() => {
     window.history.replaceState(
-      { ...window.history.state, vinniIntro: 'music-gate', vinniScene: 'welcome' },
+      { ...window.history.state, vinniIntro: 'identity-gate', vinniScene: 'welcome' },
       '',
       window.location.href
     );
 
     const handlePopState = (event) => {
+      if (event.state?.vinniIntro === 'identity-gate') {
+        setShowLanding(true);
+        setIdentityVerified(false);
+        setLandingStarted(false);
+        setShowApp(false);
+        setScene('welcome');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
       if (event.state?.vinniIntro === 'music-gate') {
         setShowLanding(true);
+        setIdentityVerified(true);
         setLandingStarted(false);
         setShowApp(false);
         setScene('welcome');
@@ -102,6 +114,7 @@ function App() {
 
       if (event.state?.vinniIntro === 'birthday-landing') {
         setShowLanding(true);
+        setIdentityVerified(true);
         setLandingStarted(true);
         setShowApp(false);
         setScene('welcome');
@@ -114,6 +127,7 @@ function App() {
         : event.state?.vinniScene;
       if (scenes.includes(previousScene)) {
         setShowLanding(false);
+        setIdentityVerified(true);
         setShowApp(true);
         setScene(previousScene);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -203,6 +217,15 @@ function App() {
       window.location.href
     );
     setLandingStarted(true);
+  };
+
+  const verifyBirthdayIdentity = () => {
+    window.history.pushState(
+      { ...window.history.state, vinniIntro: 'music-gate', vinniScene: 'welcome' },
+      '',
+      window.location.href
+    );
+    setIdentityVerified(true);
   };
 
   const enterBirthdayApp = () => {
@@ -349,7 +372,9 @@ function App() {
     <>
       {showLanding && (
         <BirthdayLanding
+          initialIdentityVerified={identityVerified}
           initialHasStarted={landingStarted}
+          onIdentityVerified={verifyBirthdayIdentity}
           onStartMusic={startBirthdayMusic}
           onEnter={enterBirthdayApp}
           onExitComplete={finishBirthdayLanding}
