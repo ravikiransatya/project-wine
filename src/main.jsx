@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createPortal } from 'react-dom';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import './style.css';
 import { magicAudio } from './sounds';
 import { secretNotes } from './data/memories';
@@ -915,4 +916,9 @@ function App() {
   );
 }
 
-createRoot(document.getElementById('root')).render(<App />);
+createRoot(document.getElementById('root')).render(
+  <>
+    <App />
+    <SpeedInsights />
+  </>,
+);
