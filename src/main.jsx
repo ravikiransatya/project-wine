@@ -10,6 +10,7 @@ import { CelebrationBurst } from './components/CelebrationBurst';
 import { FirefliesAndButterflies } from './components/FirefliesAndButterflies';
 import { WaxShatter } from './components/WaxShatter';
 import { BirthdayLanding } from './components/BirthdayLanding';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 const scenes = ['welcome', 'envelope', 'letter', 'gift'];
 
@@ -911,6 +912,7 @@ function App() {
       </footer>
         </main>
       )}
+      <SpeedInsights />
     </>
   );
 }
